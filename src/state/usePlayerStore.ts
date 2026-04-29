@@ -41,6 +41,17 @@ async function persistAndSet(
   await savePlayerState(playerState);
 }
 
+function logStoreAction(actionName: string, playerState: PlayerState | null) {
+  if (!playerState) {
+    console.log(`[STORE] ${actionName} -> Journey reset`);
+    return;
+  }
+
+  console.log(
+    `[STORE] ${actionName} -> Day: ${playerState.currentDay}, AP: ${playerState.ascensionPoints}, Rituals: ${playerState.completedRituals.length}, Bosses: ${playerState.defeatedBosses.length}, Quests: ${playerState.completedQuests.length}`,
+  );
+}
+
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
   playerState: null,
   hasHydrated: false,
@@ -58,6 +69,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const playerState = createInitialPlayerState(archetypeId);
 
     await persistAndSet(set, playerState);
+    logStoreAction("startNewJourney", playerState);
   },
 
   completeRitual: async (ritualId, journalText) => {
@@ -67,10 +79,14 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       return;
     }
 
-    await persistAndSet(
-      set,
-      completeRitualWithEngine(currentPlayerState, ritualId, journalText),
+    const playerState = completeRitualWithEngine(
+      currentPlayerState,
+      ritualId,
+      journalText,
     );
+
+    await persistAndSet(set, playerState);
+    logStoreAction("completeRitual", playerState);
   },
 
   defeatBoss: async (bossId, journalText) => {
@@ -80,10 +96,14 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       return;
     }
 
-    await persistAndSet(
-      set,
-      defeatBossWithEngine(currentPlayerState, bossId, journalText),
+    const playerState = defeatBossWithEngine(
+      currentPlayerState,
+      bossId,
+      journalText,
     );
+
+    await persistAndSet(set, playerState);
+    logStoreAction("defeatBoss", playerState);
   },
 
   completeQuest: async (questId) => {
@@ -93,10 +113,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       return;
     }
 
-    await persistAndSet(
-      set,
-      completeQuestWithEngine(currentPlayerState, questId),
-    );
+    const playerState = completeQuestWithEngine(currentPlayerState, questId);
+
+    await persistAndSet(set, playerState);
+    logStoreAction("completeQuest", playerState);
   },
 
   completeTrialDay: async (dayNumber) => {
@@ -106,14 +126,18 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       return;
     }
 
-    await persistAndSet(
-      set,
-      completeTrialDayWithEngine(currentPlayerState, dayNumber),
+    const playerState = completeTrialDayWithEngine(
+      currentPlayerState,
+      dayNumber,
     );
+
+    await persistAndSet(set, playerState);
+    logStoreAction("completeTrialDay", playerState);
   },
 
   resetJourney: async () => {
     set({ playerState: null });
     await clearPlayerState();
+    logStoreAction("resetJourney", null);
   },
 }));
