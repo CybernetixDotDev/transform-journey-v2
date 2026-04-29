@@ -108,7 +108,7 @@ export default function OnboardingQuestions() {
       const archetypeId = calculateArchetype(nextAnswers);
 
       await startNewJourney(archetypeId);
-      router.replace("./result");
+      router.replace("/onboarding/result");
       return;
     }
 

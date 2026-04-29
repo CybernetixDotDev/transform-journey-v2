@@ -13,7 +13,7 @@ export default function OnboardingIndex() {
       <Button
         title="Start Soul Scan"
         onPress={() => {
-          router.push("./questions");
+          router.push("/onboarding/questions");
         }}
       />
     </View>

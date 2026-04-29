@@ -1,15 +1,16 @@
+import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { usePlayerStore } from "@/state/usePlayerStore";
 
 export default function Index() {
+  const router = useRouter();
   const playerState = usePlayerStore((state) => state.playerState);
   const hasHydrated = usePlayerStore((state) => state.hasHydrated);
   const initializeFromStorage = usePlayerStore(
     (state) => state.initializeFromStorage,
   );
-  const startNewJourney = usePlayerStore((state) => state.startNewJourney);
   const completeTrialDay = usePlayerStore((state) => state.completeTrialDay);
   const completeRitual = usePlayerStore((state) => state.completeRitual);
   const resetJourney = usePlayerStore((state) => state.resetJourney);
@@ -35,10 +36,12 @@ export default function Index() {
 
       {!playerState ? (
         <View style={styles.section}>
+          <Text style={styles.title}>Transform Journey</Text>
+          <Text style={styles.subtitle}>Begin your first Soul Scan.</Text>
           <Button
-            title="Start Test Journey"
+            title="Begin Soul Scan"
             onPress={() => {
-              void startNewJourney("seer");
+              router.push("/onboarding");
             }}
           />
         </View>
@@ -95,6 +98,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
+  },
+  subtitle: {
+    fontSize: 16,
   },
   section: {
     gap: 8,
