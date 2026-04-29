@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { Button, StyleSheet, Text, View } from "react-native";
 
 import { archetypes } from "@/content/archetypes";
@@ -22,7 +22,7 @@ export default function OnboardingResult() {
       <Button
         title="Continue"
         onPress={() => {
-          router.replace("/");
+          router.push("/ritual/breath-of-arrival" as Href);
         }}
       />
     </View>
