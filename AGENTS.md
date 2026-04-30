@@ -220,3 +220,21 @@ This project succeeds if:
 - The structure remains clean
 
 Everything else comes later.
+
+## Content & Design Constraints
+
+All new features and content must follow DEPTH_DESIGN.md.
+
+Rules:
+
+- Do not invent new archetypes without mapping to existing system
+- Do not create rituals without psychological purpose
+- Do not create bosses as enemies; they are symbolic loops
+- Do not introduce random progression mechanics
+- Preserve the 7-day initiation arc structure
+- Keep all content deterministic in V1/V1.1
+
+When unsure:
+
+- prefer simplicity over expansion
+- prefer meaning over features
