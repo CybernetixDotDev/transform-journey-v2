@@ -104,7 +104,7 @@ export default function JournalScreen() {
       </View>
 
       <Button
-        title="Return Home"
+        title="Continue Home"
         onPress={() => {
           console.log(
             `[NAV] return home from journal intendedRoute=/ currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,

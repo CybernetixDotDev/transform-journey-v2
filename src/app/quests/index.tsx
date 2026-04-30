@@ -305,7 +305,7 @@ export default function QuestsScreen() {
       </View>
 
       <Button
-        title="Return Home"
+        title="Continue Home"
         onPress={() => {
           console.log(
             `[NAV] return home from quests intendedRoute=/ currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,

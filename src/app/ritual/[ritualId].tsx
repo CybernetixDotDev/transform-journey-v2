@@ -138,10 +138,10 @@ export default function RitualScreen() {
       ? (`/library/${room.id}` as Href)
       : "/";
   const primaryReturnLabel = trialDay
-    ? "Return to Initiation"
+    ? "Continue your journey"
     : room
-      ? "Return to Room"
-      : "Return Home";
+      ? "Explore Room"
+      : "Continue Home";
 
   // Invalid content links should redirect only once to avoid navigation loops.
   useEffect(() => {
@@ -198,7 +198,7 @@ export default function RitualScreen() {
         <Text style={styles.title}>Ritual Not Found</Text>
         <Text>No ritual exists for this path.</Text>
         <Button
-          title="Return to Initiation"
+          title="Continue your journey"
           onPress={() => {
             console.log(
               `[NAV] invalid ritual fallback button pressed intendedRoute=/initiation ritualId=${ritualId}`,
@@ -216,7 +216,7 @@ export default function RitualScreen() {
         <Text style={styles.title}>Room Not Found</Text>
         <Text>This ritual points to a room that is not available.</Text>
         <Button
-          title="Return to Library"
+          title="Explore Library"
           onPress={() => {
             console.log(
               `[NAV] invalid ritual room fallback button pressed intendedRoute=/library ritualId=${ritual.id} roomId=${ritual.roomId}`,
@@ -245,7 +245,7 @@ export default function RitualScreen() {
       </View>
 
       {isLockedTrialRitual ? (
-        <Text>Complete the current initiation day before this ritual.</Text>
+        <Text>Continue the current initiation day before beginning this ritual.</Text>
       ) : null}
 
       {!isRoomUnlocked ? (
@@ -312,15 +312,21 @@ export default function RitualScreen() {
           <Text>
             {completionResult.nextDay
               ? `Next unlocked day: ${completionResult.nextDay}`
-              : "Initiation complete."}
+              : "Your initiation is complete."}
           </Text>
 
           <Button
-            title={primaryReturnLabel}
+            title={
+              trialDay
+                ? trialDay.day < 7
+                  ? `Continue to Day ${trialDay.day + 1}`
+                  : "Continue your journey"
+                : primaryReturnLabel
+            }
             onPress={() => {
               console.log(
                 trialDay
-                  ? `[NAV] return to initiation from ritual completion intendedRoute=/initiation ritualId=${ritual.id} currentDay=${playerState?.currentDay ?? "unknown"} AP=${playerState?.ascensionPoints ?? "unknown"}`
+                  ? `[NAV] proceed from trial ritual completion intendedRoute=/initiation ritualId=${ritual.id} currentDay=${playerState?.currentDay ?? "unknown"} AP=${playerState?.ascensionPoints ?? "unknown"}`
                   : room
                     ? `[NAV] return to room from ritual completion intendedRoute=/library/${room.id} ritualId=${ritual.id} roomId=${room.id}`
                     : `[NAV] return home from ritual completion intendedRoute=/ ritualId=${ritual.id}`,
@@ -328,6 +334,18 @@ export default function RitualScreen() {
               router.replace(primaryReturnPath);
             }}
           />
+
+          {trialDay ? (
+            <Button
+              title="Explore Library"
+              onPress={() => {
+                console.log(
+                  `[NAV] explore library from ritual completion intendedRoute=/library ritualId=${ritual.id} currentDay=${playerState?.currentDay ?? "unknown"} AP=${playerState?.ascensionPoints ?? "unknown"}`,
+                );
+                router.replace(LIBRARY_ROUTE);
+              }}
+            />
+          ) : null}
         </View>
       ) : (
         <Button

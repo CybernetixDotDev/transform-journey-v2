@@ -50,9 +50,14 @@ export default function InitiationScreen() {
 
   const currentTrialDay = getCurrentTrialDay(playerState);
   const progressSummary = getProgressSummary(playerState);
+  const currentActionPath = currentTrialDay?.ritualId
+    ? (`/ritual/${currentTrialDay.ritualId}` as Href)
+    : currentTrialDay?.bossId
+      ? (`/boss/${currentTrialDay.bossId}` as Href)
+      : undefined;
   const nextStepText = playerState.trialCompleted
-    ? "The initiation is complete. Continue into the Library."
-    : `Next step: Complete Day ${playerState.currentDay}.`;
+    ? "Your initiation is complete. Explore the Library."
+    : `Next step: Continue Day ${playerState.currentDay}.`;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -63,6 +68,21 @@ export default function InitiationScreen() {
         {playerState.trialCompleted ? " - complete" : ""}
       </Text>
       <Text style={styles.body}>{nextStepText}</Text>
+
+      {!playerState.trialCompleted && currentTrialDay && currentActionPath ? (
+        <View style={styles.primaryAction}>
+          <Text style={styles.sectionTitle}>Continue your initiation journey</Text>
+          <Button
+            title={`Begin Day ${currentTrialDay.day}`}
+            onPress={() => {
+              console.log(
+                `[UI] begin day button pressed intendedRoute=${currentActionPath} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+              );
+              router.push(currentActionPath);
+            }}
+          />
+        </View>
+      ) : null}
 
       <View style={styles.summary}>
         <Text>Ascension Level: {progressSummary.ascensionLevel}</Text>
@@ -113,7 +133,7 @@ export default function InitiationScreen() {
 
               {isCurrent && ritual ? (
                 <Button
-                  title="Start Current Ritual"
+                  title="Begin Ritual"
                   onPress={() => {
                     console.log(
                       `[UI] start current ritual button pressed intendedRoute=/ritual/${ritual.id} ritualId=${ritual.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -125,7 +145,7 @@ export default function InitiationScreen() {
 
               {isCurrent && !ritual && currentTrialDay?.bossId ? (
                 <Button
-                  title="Start Current Boss"
+                  title="Face the Boss"
                   onPress={() => {
                     console.log(
                       `[UI] start current boss button pressed intendedRoute=/boss/${currentTrialDay.bossId} bossId=${currentTrialDay.bossId} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -135,7 +155,7 @@ export default function InitiationScreen() {
                 />
               ) : null}
 
-              {isLocked ? <Text>Complete prior days to unlock.</Text> : null}
+              {isLocked ? <Text>Continue earlier days to unlock.</Text> : null}
             </View>
           );
         })}
@@ -143,7 +163,7 @@ export default function InitiationScreen() {
 
       {playerState.trialCompleted ? (
         <Button
-          title="Enter Library"
+          title="Explore Library"
           onPress={() => {
             console.log(
               `[NAV] return to library after initiation complete intendedRoute=/library currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -153,7 +173,7 @@ export default function InitiationScreen() {
         />
       ) : null}
       <Button
-        title="Return Home"
+        title="Continue Home"
         onPress={() => {
           router.replace("/");
         }}
@@ -179,11 +199,22 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 16,
   },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
   summary: {
     borderColor: "#bbb",
     borderRadius: 6,
     borderWidth: 1,
     gap: 6,
+    padding: 12,
+  },
+  primaryAction: {
+    borderColor: "#555",
+    borderRadius: 6,
+    borderWidth: 2,
+    gap: 8,
     padding: 12,
   },
   days: {

@@ -115,10 +115,10 @@ export default function BossEncounterScreen() {
       ? (`/library/${room.id}` as Href)
       : LIBRARY_ROUTE;
   const primaryReturnLabel = isInitiationBoss
-    ? "Return to Initiation"
+    ? "Continue your journey"
     : room
-      ? "Return to Room"
-      : "Return to Library";
+      ? "Explore Room"
+      : "Explore Library";
   const activeReturnPath = completionReturnTarget?.path ?? primaryReturnPath;
   const activeReturnLabel = completionReturnTarget?.label ?? primaryReturnLabel;
 
@@ -155,7 +155,7 @@ export default function BossEncounterScreen() {
     ) {
       await completeTrialDay(trialDay.day);
       setCompletionReturnTarget({
-        label: "Return to Initiation",
+        label: "Continue your journey",
         path: "/initiation",
       });
     } else {
@@ -196,7 +196,7 @@ export default function BossEncounterScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Boss Not Found</Text>
         <Button
-          title="Return to Library"
+          title="Explore Library"
           onPress={() => {
             console.log(
               `[NAV] invalid boss fallback button pressed intendedRoute=/library bossId=${bossId}`,
@@ -214,7 +214,7 @@ export default function BossEncounterScreen() {
         <Text style={styles.title}>Room Not Found</Text>
         <Text>This boss points to a room that is not available.</Text>
         <Button
-          title="Return to Library"
+          title="Explore Library"
           onPress={() => {
             console.log(
               `[NAV] invalid boss room fallback button pressed intendedRoute=/library bossId=${boss.id} roomId=${boss.roomId}`,
@@ -313,7 +313,7 @@ export default function BossEncounterScreen() {
 
       {!encounterResult && bossStatus.canConfront ? (
         <Button
-          title="Attempt Encounter"
+          title="Face the Boss"
           onPress={() => void handleAttemptEncounter()}
         />
       ) : null}
@@ -326,7 +326,7 @@ export default function BossEncounterScreen() {
       trialDay &&
       !playerState.trialCompleted &&
       trialDay.day !== playerState.currentDay ? (
-        <Text>Complete the current initiation day before this boss.</Text>
+        <Text>Continue the current initiation day before facing this boss.</Text>
       ) : null}
 
       <Button

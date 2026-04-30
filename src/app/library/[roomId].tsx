@@ -51,9 +51,9 @@ export default function RoomDetailScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Room Not Found</Text>
-        <Text>Returning to the Library.</Text>
+        <Text>Opening the Library.</Text>
         <Button
-          title="Return to Library"
+          title="Explore Library"
           onPress={() => {
             console.log(
               `[NAV] invalid room fallback button pressed intendedRoute=/library roomId=${roomId}`,
@@ -105,7 +105,7 @@ export default function RoomDetailScreen() {
             <Text key={reason}>Lock: {reason}</Text>
           ))}
           <Button
-            title="Return to Library"
+            title="Explore Library"
             onPress={() => {
               console.log(
                 `[NAV] return to library from locked room intendedRoute=/library roomId=${room.id}`,
@@ -131,7 +131,7 @@ export default function RoomDetailScreen() {
                     <Text>{isCompleted ? "Completed" : "Available"}</Text>
                     {!isCompleted ? (
                       <Button
-                        title="Start Ritual"
+                        title="Begin Ritual"
                         onPress={() => {
                           console.log(
                             `[UI] start ritual button pressed intendedRoute=/ritual/${ritual.id} roomId=${room.id} ritualId=${ritual.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -170,7 +170,7 @@ export default function RoomDetailScreen() {
                     ))}
                     {bossStatus.canConfront ? (
                       <Button
-                        title="Start Boss Encounter"
+                        title="Face the Boss"
                         onPress={() => {
                           console.log(
                             `[UI] start boss button pressed intendedRoute=/boss/${boss.id} roomId=${room.id} bossId=${boss.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -188,7 +188,7 @@ export default function RoomDetailScreen() {
           </View>
 
           <Button
-            title="Return to Library"
+            title="Explore Library"
             onPress={() => {
               console.log(
                 `[NAV] return to library from room intendedRoute=/library roomId=${room.id}`,

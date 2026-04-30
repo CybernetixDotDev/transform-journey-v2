@@ -11,7 +11,7 @@ export default function OnboardingIndex() {
         Take a short Soul Scan to reveal your starting archetype.
       </Text>
       <Button
-        title="Start Soul Scan"
+        title="Begin Soul Scan"
         onPress={() => {
           router.push("/onboarding/questions");
         }}

@@ -2,7 +2,39 @@ import { type Href, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import type { PlayerState } from "@/domain/types";
+import { getCurrentTrialDay } from "@/engine/trialEngine";
 import { usePlayerStore } from "@/state/usePlayerStore";
+
+function getHomeRecommendation(playerState: PlayerState) {
+  if (playerState.trialCompleted) {
+    return {
+      status: "Your initiation is complete",
+      next: "Next: Explore unlocked room",
+    };
+  }
+
+  const currentTrialDay = getCurrentTrialDay(playerState);
+
+  if (currentTrialDay?.bossId) {
+    return {
+      status: `You are on Day ${playerState.currentDay}`,
+      next: "Next: Face your trial boss",
+    };
+  }
+
+  if (currentTrialDay?.ritualId) {
+    return {
+      status: `You are on Day ${playerState.currentDay}`,
+      next: `Next: Begin Day ${playerState.currentDay} ritual`,
+    };
+  }
+
+  return {
+    status: `You are on Day ${playerState.currentDay}`,
+    next: "Next: Continue your initiation journey",
+  };
+}
 
 export default function Index() {
   const router = useRouter();
@@ -43,10 +75,17 @@ export default function Index() {
         </View>
       ) : (
         <View style={styles.section}>
+          <View style={styles.recommendation}>
+            <Text style={styles.sectionTitle}>
+              {getHomeRecommendation(playerState).status}
+            </Text>
+            <Text>{getHomeRecommendation(playerState).next}</Text>
+          </View>
+
           <Text style={styles.subtitle}>
             {playerState.trialCompleted
               ? "Current objective: Explore the Library and continue room work."
-              : `Current objective: Complete Day ${playerState.currentDay} of the 7-Day Initiation.`}
+              : `Current objective: Continue Day ${playerState.currentDay} of the 7-Day Initiation.`}
           </Text>
           <Text>Archetype: {playerState.archetypeId}</Text>
           <Text>Day: {playerState.currentDay}</Text>
@@ -59,7 +98,7 @@ export default function Index() {
 
           <View style={styles.buttonGroup}>
             <Button
-              title="View 7-Day Initiation"
+              title="Continue Initiation"
               onPress={() => {
                 console.log(
                   `[UI] initiation button pressed intendedRoute=/initiation currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -68,7 +107,7 @@ export default function Index() {
               }}
             />
             <Button
-              title="Enter Library"
+              title="Explore Library"
               onPress={() => {
                 console.log(
                   `[UI] library button pressed intendedRoute=/library currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -127,6 +166,17 @@ const styles = StyleSheet.create({
   section: {
     gap: 8,
     marginTop: 12,
+  },
+  recommendation: {
+    borderColor: "#777",
+    borderRadius: 6,
+    borderWidth: 1,
+    gap: 6,
+    padding: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
   },
   buttonGroup: {
     gap: 8,

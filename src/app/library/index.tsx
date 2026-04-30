@@ -95,7 +95,7 @@ export default function LibraryScreen() {
 
               {isUnlocked ? (
                 <Button
-                  title="Enter Room"
+                  title="Explore Room"
                   onPress={() => {
                     console.log(
                       `[UI] enter room button pressed intendedRoute=/library/${room.id} roomId=${room.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
@@ -109,7 +109,7 @@ export default function LibraryScreen() {
         })}
       </View>
       <Button
-        title="Return Home"
+        title="Continue Home"
         onPress={() => {
           router.replace("/");
         }}
