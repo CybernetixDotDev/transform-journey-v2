@@ -3,6 +3,7 @@ import { create } from "zustand";
 import type {
   ArchetypeId,
   BossId,
+  JournalEntry,
   PlayerState,
   QuestId,
   RitualId,
@@ -30,6 +31,7 @@ export type PlayerStore = {
   readonly defeatBoss: (bossId: BossId, journalText?: string) => Promise<void>;
   readonly completeQuest: (questId: QuestId) => Promise<void>;
   readonly completeTrialDay: (dayNumber: number) => Promise<void>;
+  readonly createJournalEntry: (response: string, prompt?: string) => Promise<void>;
   readonly resetJourney: () => Promise<void>;
 };
 
@@ -133,6 +135,29 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
     await persistAndSet(set, playerState);
     logStoreAction("completeTrialDay", playerState);
+  },
+
+  createJournalEntry: async (response, prompt = "Manual journal entry") => {
+    const currentPlayerState = get().playerState;
+    const trimmedResponse = response.trim();
+
+    if (!currentPlayerState || trimmedResponse.length === 0) {
+      return;
+    }
+
+    const entryNumber = currentPlayerState.journalEntries.length + 1;
+    const journalEntry: JournalEntry = {
+      id: `manual-journal-${entryNumber}`,
+      prompt,
+      response: trimmedResponse,
+      createdAt: new Date().toISOString(),
+    };
+    const playerState: PlayerState = {
+      ...currentPlayerState,
+      journalEntries: [...currentPlayerState.journalEntries, journalEntry],
+    };
+
+    await persistAndSet(set, playerState);
   },
 
   resetJourney: async () => {

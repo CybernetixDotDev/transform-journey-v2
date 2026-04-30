@@ -11,8 +11,6 @@ export default function Index() {
   const initializeFromStorage = usePlayerStore(
     (state) => state.initializeFromStorage,
   );
-  const completeTrialDay = usePlayerStore((state) => state.completeTrialDay);
-  const completeRitual = usePlayerStore((state) => state.completeRitual);
   const resetJourney = usePlayerStore((state) => state.resetJourney);
 
   useEffect(() => {
@@ -30,13 +28,10 @@ export default function Index() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Transform Journey V2 Dev Harness</Text>
-      <Text>Hydrated: {hasHydrated ? "yes" : "no"}</Text>
-      <Text>Journey exists: {playerState ? "yes" : "no"}</Text>
+      <Text style={styles.title}>Transform Journey</Text>
 
       {!playerState ? (
         <View style={styles.section}>
-          <Text style={styles.title}>Transform Journey</Text>
           <Text style={styles.subtitle}>Begin your first Soul Scan.</Text>
           <Button
             title="Begin Soul Scan"
@@ -47,32 +42,43 @@ export default function Index() {
         </View>
       ) : (
         <View style={styles.section}>
-          <Text>archetypeId: {playerState.archetypeId}</Text>
-          <Text>currentDay: {playerState.currentDay}</Text>
-          <Text>ascensionPoints: {playerState.ascensionPoints}</Text>
-          <Text>trialCompleted: {String(playerState.trialCompleted)}</Text>
-          <Text>premiumUnlocked: {String(playerState.premiumUnlocked)}</Text>
-          <Text>completedRooms: {playerState.completedRooms.length}</Text>
-          <Text>
-            completedRituals: {playerState.completedRituals.length}
+          <Text style={styles.subtitle}>
+            {playerState.trialCompleted
+              ? "Current objective: Explore the Library and continue room work."
+              : `Current objective: Complete Day ${playerState.currentDay} of the 7-Day Initiation.`}
           </Text>
-          <Text>defeatedBosses: {playerState.defeatedBosses.length}</Text>
-          <Text>completedQuests: {playerState.completedQuests.length}</Text>
+          <Text>Archetype: {playerState.archetypeId}</Text>
+          <Text>Day: {playerState.currentDay}</Text>
+          <Text>AP: {playerState.ascensionPoints}</Text>
+          <Text>Trial complete: {String(playerState.trialCompleted)}</Text>
+          <Text>Unlocked rooms: {playerState.unlockedRooms.length}</Text>
+          <Text>Completed rituals: {playerState.completedRituals.length}</Text>
+          <Text>Defeated bosses: {playerState.defeatedBosses.length}</Text>
+          <Text>Completed quests: {playerState.completedQuests.length}</Text>
 
           <View style={styles.buttonGroup}>
             <Button
-              title="Complete Current Trial Day"
+              title="View 7-Day Initiation"
               onPress={() => {
-                void completeTrialDay(playerState.currentDay);
+                router.push("/initiation");
               }}
             />
             <Button
-              title="Complete Breath of Arrival Ritual"
+              title="Enter Library"
               onPress={() => {
-                void completeRitual(
-                  "breath-of-arrival",
-                  "Developer test journal entry.",
-                );
+                router.push("/library/index");
+              }}
+            />
+            <Button
+              title="Quests"
+              onPress={() => {
+                router.push("/quests/index");
+              }}
+            />
+            <Button
+              title="Journal"
+              onPress={() => {
+                router.push("/journal/index");
               }}
             />
             <Button

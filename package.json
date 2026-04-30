@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test": "node tests/v1-acceptance-tests.cjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
