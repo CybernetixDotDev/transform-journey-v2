@@ -58,9 +58,9 @@ export const bosses: readonly Boss[] = [
   {
     id: "ghost",
     name: "The Ghost",
-    description: "The fading self that stays unseen to stay safe.",
+    description: "The loop of withdrawing, fading back, and staying unseen when being present feels too exposed.",
     roomId: "archetype-chamber",
-    reflectionPrompt: "Where have you become invisible to avoid consequence?",
+    reflectionPrompt: "What has this pattern cost you?",
     rewardIds: ["archetype-sigil"],
     unlockRequirements: [{ type: "completedRitual", ritualId: "archetype-activation" }],
   },
