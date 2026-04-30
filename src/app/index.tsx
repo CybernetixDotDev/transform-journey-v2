@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -36,6 +36,7 @@ export default function Index() {
           <Button
             title="Begin Soul Scan"
             onPress={() => {
+              console.log("[UI] begin soul scan button pressed intendedRoute=/onboarding");
               router.push("/onboarding");
             }}
           />
@@ -60,30 +61,45 @@ export default function Index() {
             <Button
               title="View 7-Day Initiation"
               onPress={() => {
+                console.log(
+                  `[UI] initiation button pressed intendedRoute=/initiation currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                );
                 router.push("/initiation");
               }}
             />
             <Button
               title="Enter Library"
               onPress={() => {
-                router.push("/library/index");
+                console.log(
+                  `[UI] library button pressed intendedRoute=/library currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                );
+                router.push("/library" as Href);
               }}
             />
             <Button
               title="Quests"
               onPress={() => {
-                router.push("/quests/index");
+                console.log(
+                  `[UI] quests button pressed intendedRoute=/quests currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                );
+                router.push("/quests" as Href);
               }}
             />
             <Button
               title="Journal"
               onPress={() => {
-                router.push("/journal/index");
+                console.log(
+                  `[UI] journal button pressed intendedRoute=/journal currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                );
+                router.push("/journal" as Href);
               }}
             />
             <Button
               title="Reset Journey"
               onPress={() => {
+                console.log(
+                  `[UI] reset journey button pressed currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                );
                 void resetJourney();
               }}
             />

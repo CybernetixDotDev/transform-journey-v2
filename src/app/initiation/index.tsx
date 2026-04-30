@@ -115,6 +115,9 @@ export default function InitiationScreen() {
                 <Button
                   title="Start Current Ritual"
                   onPress={() => {
+                    console.log(
+                      `[UI] start current ritual button pressed intendedRoute=/ritual/${ritual.id} ritualId=${ritual.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                    );
                     router.push(`/ritual/${ritual.id}` as Href);
                   }}
                 />
@@ -124,6 +127,9 @@ export default function InitiationScreen() {
                 <Button
                   title="Start Current Boss"
                   onPress={() => {
+                    console.log(
+                      `[UI] start current boss button pressed intendedRoute=/boss/${currentTrialDay.bossId} bossId=${currentTrialDay.bossId} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                    );
                     router.push(`/boss/${currentTrialDay.bossId}` as Href);
                   }}
                 />
@@ -139,7 +145,10 @@ export default function InitiationScreen() {
         <Button
           title="Enter Library"
           onPress={() => {
-            router.push("/library/index");
+            console.log(
+              `[NAV] return to library after initiation complete intendedRoute=/library currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+            );
+            router.push("/library" as Href);
           }}
         />
       ) : null}

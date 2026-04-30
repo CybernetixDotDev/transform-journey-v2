@@ -130,6 +130,9 @@ export default function QuestsScreen() {
       return;
     }
 
+    console.log(
+      `[UI] complete quest button pressed questId=${quest.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+    );
     const beforePlayerState = playerState;
 
     await completeQuest(quest.id);
@@ -140,6 +143,7 @@ export default function QuestsScreen() {
       return;
     }
 
+    // Feedback is derived from before/after state so engines remain UI-agnostic.
     setCompletionResult(
       createQuestCompletionResult(quest, beforePlayerState, afterPlayerState),
     );
@@ -162,6 +166,7 @@ export default function QuestsScreen() {
         <Button
           title="Begin Soul Scan"
           onPress={() => {
+            console.log("[UI] begin soul scan from quests intendedRoute=/onboarding");
             router.push("/onboarding");
           }}
         />
@@ -302,6 +307,9 @@ export default function QuestsScreen() {
       <Button
         title="Return Home"
         onPress={() => {
+          console.log(
+            `[NAV] return home from quests intendedRoute=/ currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+          );
           router.replace("/");
         }}
       />

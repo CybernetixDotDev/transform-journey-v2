@@ -97,6 +97,9 @@ export default function LibraryScreen() {
                 <Button
                   title="Enter Room"
                   onPress={() => {
+                    console.log(
+                      `[UI] enter room button pressed intendedRoute=/library/${room.id} roomId=${room.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                    );
                     router.push(`/library/${room.id}` as Href);
                   }}
                 />

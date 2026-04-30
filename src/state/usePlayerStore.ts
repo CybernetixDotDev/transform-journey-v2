@@ -39,6 +39,7 @@ async function persistAndSet(
   set: (state: Partial<PlayerStore>) => void,
   playerState: PlayerState,
 ): Promise<void> {
+  // All gameplay mutations persist through this single local storage boundary.
   set({ playerState });
   await savePlayerState(playerState);
 }
@@ -68,6 +69,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   startNewJourney: async (archetypeId) => {
+    console.log(`[STORE] startNewJourney requested archetypeId=${archetypeId}`);
     const playerState = createInitialPlayerState(archetypeId);
 
     await persistAndSet(set, playerState);
@@ -75,6 +77,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   completeRitual: async (ritualId, journalText) => {
+    console.log(`[STORE] completeRitual requested ritualId=${ritualId}`);
     const currentPlayerState = get().playerState;
 
     if (!currentPlayerState) {
@@ -92,6 +95,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   defeatBoss: async (bossId, journalText) => {
+    console.log(`[STORE] defeatBoss requested bossId=${bossId}`);
     const currentPlayerState = get().playerState;
 
     if (!currentPlayerState) {
@@ -109,6 +113,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   completeQuest: async (questId) => {
+    console.log(`[STORE] completeQuest requested questId=${questId}`);
     const currentPlayerState = get().playerState;
 
     if (!currentPlayerState) {
@@ -122,6 +127,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   completeTrialDay: async (dayNumber) => {
+    console.log(`[STORE] completeTrialDay requested day=${dayNumber}`);
     const currentPlayerState = get().playerState;
 
     if (!currentPlayerState) {
@@ -138,6 +144,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   createJournalEntry: async (response, prompt = "Manual journal entry") => {
+    console.log("[STORE] createJournalEntry requested");
     const currentPlayerState = get().playerState;
     const trimmedResponse = response.trim();
 
@@ -161,6 +168,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   resetJourney: async () => {
+    console.log("[STORE] resetJourney requested");
     set({ playerState: null });
     await clearPlayerState();
     logStoreAction("resetJourney", null);

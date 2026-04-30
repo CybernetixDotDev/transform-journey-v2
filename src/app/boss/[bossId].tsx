@@ -1,5 +1,5 @@
 import { type Href, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { bosses } from "@/content/bosses";
@@ -11,6 +11,7 @@ import { getTrialDay } from "@/engine/trialEngine";
 import { usePlayerStore } from "@/state/usePlayerStore";
 
 const TRIAL_DAY_NUMBERS = [1, 2, 3, 4, 5, 6, 7] as const;
+const LIBRARY_ROUTE = "/library" as Href;
 
 type StatChange = {
   readonly statId: StatId;
@@ -84,8 +85,13 @@ function findTrialDayForBoss(bossId: string) {
 export default function BossEncounterScreen() {
   const router = useRouter();
   const { bossId } = useLocalSearchParams<{ bossId: string }>();
+  const invalidRouteRedirectedRef = useRef(false);
   const [encounterResult, setEncounterResult] =
     useState<EncounterResult | null>(null);
+  const [completionReturnTarget, setCompletionReturnTarget] = useState<{
+    readonly label: string;
+    readonly path: Href;
+  } | null>(null);
   const playerState = usePlayerStore((state) => state.playerState);
   const hasHydrated = usePlayerStore((state) => state.hasHydrated);
   const initializeFromStorage = usePlayerStore(
@@ -100,6 +106,32 @@ export default function BossEncounterScreen() {
     : undefined;
   const bossStatus =
     playerState && boss ? getBossStatus(playerState, boss.id) : undefined;
+  const isInitiationBoss =
+    !!trialDay && !playerState?.trialCompleted && trialDay.day === playerState?.currentDay;
+  // Initiation bosses return to initiation; room bosses return to their room.
+  const primaryReturnPath = isInitiationBoss
+    ? "/initiation"
+    : room
+      ? (`/library/${room.id}` as Href)
+      : LIBRARY_ROUTE;
+  const primaryReturnLabel = isInitiationBoss
+    ? "Return to Initiation"
+    : room
+      ? "Return to Room"
+      : "Return to Library";
+  const activeReturnPath = completionReturnTarget?.path ?? primaryReturnPath;
+  const activeReturnLabel = completionReturnTarget?.label ?? primaryReturnLabel;
+
+  // Invalid content links should redirect only once to avoid navigation loops.
+  useEffect(() => {
+    if (boss?.roomId && !room && !invalidRouteRedirectedRef.current) {
+      invalidRouteRedirectedRef.current = true;
+      console.log(
+        `[NAV] invalid boss room fallback -> /library bossId=${boss.id} roomId=${boss.roomId}`,
+      );
+      router.replace(LIBRARY_ROUTE);
+    }
+  }, [boss?.id, boss?.roomId, room?.id, router]);
 
   useEffect(() => {
     if (!hasHydrated) {
@@ -112,16 +144,26 @@ export default function BossEncounterScreen() {
       return;
     }
 
+    console.log(
+      `[UI] boss attempt button pressed bossId=${boss.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+    );
     const beforePlayerState = playerState;
 
+    // Day 6 boss is part of trial progression; other bosses complete normally.
     if (
-      trialDay &&
-      !playerState.trialCompleted &&
-      trialDay.day === playerState.currentDay
+      isInitiationBoss
     ) {
       await completeTrialDay(trialDay.day);
+      setCompletionReturnTarget({
+        label: "Return to Initiation",
+        path: "/initiation",
+      });
     } else {
       await defeatBoss(boss.id);
+      setCompletionReturnTarget({
+        label: primaryReturnLabel,
+        path: primaryReturnPath,
+      });
     }
 
     const afterPlayerState = usePlayerStore.getState().playerState;
@@ -130,6 +172,7 @@ export default function BossEncounterScreen() {
       return;
     }
 
+    // Feedback is derived from before/after state so engines remain UI-agnostic.
     setEncounterResult(
       createEncounterResult(
         beforePlayerState,
@@ -155,7 +198,28 @@ export default function BossEncounterScreen() {
         <Button
           title="Return to Library"
           onPress={() => {
-            router.replace("/library/index");
+            console.log(
+              `[NAV] invalid boss fallback button pressed intendedRoute=/library bossId=${bossId}`,
+            );
+            router.replace(LIBRARY_ROUTE);
+          }}
+        />
+      </View>
+    );
+  }
+
+  if (boss.roomId && !room) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Room Not Found</Text>
+        <Text>This boss points to a room that is not available.</Text>
+        <Button
+          title="Return to Library"
+          onPress={() => {
+            console.log(
+              `[NAV] invalid boss room fallback button pressed intendedRoute=/library bossId=${boss.id} roomId=${boss.roomId}`,
+            );
+            router.replace(LIBRARY_ROUTE);
           }}
         />
       </View>
@@ -265,18 +329,17 @@ export default function BossEncounterScreen() {
         <Text>Complete the current initiation day before this boss.</Text>
       ) : null}
 
-      {room ? (
-        <Button
-          title="Return to Room"
-          onPress={() => {
-            router.replace(`/library/${room.id}` as Href);
-          }}
-        />
-      ) : null}
       <Button
-        title="Return to Library"
+        title={activeReturnLabel}
         onPress={() => {
-          router.replace("/library/index");
+          console.log(
+            activeReturnPath === "/initiation"
+              ? `[NAV] return to initiation from boss intendedRoute=/initiation bossId=${boss.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`
+              : room
+                ? `[NAV] return to room from boss intendedRoute=/library/${room.id} bossId=${boss.id} roomId=${room.id}`
+                : `[NAV] return to library from boss intendedRoute=/library bossId=${boss.id}`,
+          );
+          router.replace(activeReturnPath);
         }}
       />
     </ScrollView>

@@ -1,5 +1,5 @@
 import { type Href, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { bosses } from "@/content/bosses";
@@ -9,9 +9,12 @@ import { getBossStatus } from "@/engine/bossEngine";
 import { canEnterRoom, getLockReasons } from "@/engine/unlockEngine";
 import { usePlayerStore } from "@/state/usePlayerStore";
 
+const LIBRARY_ROUTE = "/library" as Href;
+
 export default function RoomDetailScreen() {
   const router = useRouter();
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const invalidRouteRedirectedRef = useRef(false);
   const playerState = usePlayerStore((state) => state.playerState);
   const hasHydrated = usePlayerStore((state) => state.hasHydrated);
   const initializeFromStorage = usePlayerStore(
@@ -19,11 +22,21 @@ export default function RoomDetailScreen() {
   );
   const room = rooms.find((candidate) => candidate.id === roomId);
 
+  // Hydration is the only store action this screen can trigger.
   useEffect(() => {
     if (!hasHydrated) {
       void initializeFromStorage();
     }
   }, [hasHydrated, initializeFromStorage]);
+
+  // Direct invalid room URLs should recover once instead of looping.
+  useEffect(() => {
+    if (hasHydrated && !room && !invalidRouteRedirectedRef.current) {
+      invalidRouteRedirectedRef.current = true;
+      console.log(`[NAV] invalid room fallback -> /library (${roomId})`);
+      router.replace(LIBRARY_ROUTE);
+    }
+  }, [hasHydrated, room?.id, roomId, router]);
 
   if (!hasHydrated) {
     return (
@@ -38,10 +51,14 @@ export default function RoomDetailScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Room Not Found</Text>
+        <Text>Returning to the Library.</Text>
         <Button
           title="Return to Library"
           onPress={() => {
-            router.replace("/library/index");
+            console.log(
+              `[NAV] invalid room fallback button pressed intendedRoute=/library roomId=${roomId}`,
+            );
+            router.replace(LIBRARY_ROUTE);
           }}
         />
       </View>
@@ -90,7 +107,10 @@ export default function RoomDetailScreen() {
           <Button
             title="Return to Library"
             onPress={() => {
-              router.replace("/library/index");
+              console.log(
+                `[NAV] return to library from locked room intendedRoute=/library roomId=${room.id}`,
+              );
+              router.replace(LIBRARY_ROUTE);
             }}
           />
         </View>
@@ -113,6 +133,9 @@ export default function RoomDetailScreen() {
                       <Button
                         title="Start Ritual"
                         onPress={() => {
+                          console.log(
+                            `[UI] start ritual button pressed intendedRoute=/ritual/${ritual.id} roomId=${room.id} ritualId=${ritual.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                          );
                           router.push(`/ritual/${ritual.id}` as Href);
                         }}
                       />
@@ -149,6 +172,9 @@ export default function RoomDetailScreen() {
                       <Button
                         title="Start Boss Encounter"
                         onPress={() => {
+                          console.log(
+                            `[UI] start boss button pressed intendedRoute=/boss/${boss.id} roomId=${room.id} bossId=${boss.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+                          );
                           router.push(`/boss/${boss.id}` as Href);
                         }}
                       />
@@ -164,7 +190,10 @@ export default function RoomDetailScreen() {
           <Button
             title="Return to Library"
             onPress={() => {
-              router.replace("/library/index");
+              console.log(
+                `[NAV] return to library from room intendedRoute=/library roomId=${room.id}`,
+              );
+              router.replace(LIBRARY_ROUTE);
             }}
           />
         </>

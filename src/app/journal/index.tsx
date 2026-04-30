@@ -30,6 +30,9 @@ export default function JournalScreen() {
   }, [hasHydrated, initializeFromStorage]);
 
   async function handleCreateEntry() {
+    console.log(
+      `[UI] save journal entry button pressed currentDay=${playerState?.currentDay ?? "unknown"} AP=${playerState?.ascensionPoints ?? "unknown"}`,
+    );
     await createJournalEntry(entryText);
     setEntryText("");
   }
@@ -51,6 +54,7 @@ export default function JournalScreen() {
         <Button
           title="Begin Soul Scan"
           onPress={() => {
+            console.log("[UI] begin soul scan from journal intendedRoute=/onboarding");
             router.push("/onboarding");
           }}
         />
@@ -102,6 +106,9 @@ export default function JournalScreen() {
       <Button
         title="Return Home"
         onPress={() => {
+          console.log(
+            `[NAV] return home from journal intendedRoute=/ currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+          );
           router.replace("/");
         }}
       />

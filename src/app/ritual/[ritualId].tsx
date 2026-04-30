@@ -1,5 +1,5 @@
 import { type Href, useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { rewards } from "@/content/rewards";
@@ -11,6 +11,7 @@ import { canEnterRoom, getLockReasons } from "@/engine/unlockEngine";
 import { usePlayerStore } from "@/state/usePlayerStore";
 
 const TRIAL_DAY_NUMBERS = [1, 2, 3, 4, 5, 6, 7] as const;
+const LIBRARY_ROUTE = "/library" as Href;
 
 type StatChange = {
   readonly statId: StatId;
@@ -91,6 +92,7 @@ function createCompletionResult(
 export default function RitualScreen() {
   const router = useRouter();
   const { ritualId } = useLocalSearchParams<{ ritualId: string }>();
+  const invalidRouteRedirectedRef = useRef(false);
   const [completionResult, setCompletionResult] =
     useState<CompletionResult | null>(null);
   const playerState = usePlayerStore((state) => state.playerState);
@@ -129,14 +131,44 @@ export default function RitualScreen() {
     isRoomUnlocked &&
     !isCompleted &&
     !isLockedTrialRitual;
+  // Trial rituals always return to initiation; room rituals return to their room.
+  const primaryReturnPath = trialDay
+    ? "/initiation"
+    : room
+      ? (`/library/${room.id}` as Href)
+      : "/";
+  const primaryReturnLabel = trialDay
+    ? "Return to Initiation"
+    : room
+      ? "Return to Room"
+      : "Return Home";
+
+  // Invalid content links should redirect only once to avoid navigation loops.
+  useEffect(() => {
+    if (
+      ritual?.roomId &&
+      !room &&
+      !invalidRouteRedirectedRef.current
+    ) {
+      invalidRouteRedirectedRef.current = true;
+      console.log(
+        `[NAV] invalid ritual room fallback -> /library ritualId=${ritual.id} roomId=${ritual.roomId}`,
+      );
+      router.replace(LIBRARY_ROUTE);
+    }
+  }, [ritual?.id, ritual?.roomId, room?.id, router]);
 
   async function handleCompleteRitual() {
     if (!canComplete || !playerState || !ritual) {
       return;
     }
 
+    console.log(
+      `[UI] ritual complete button pressed ritualId=${ritual.id} currentDay=${playerState.currentDay} AP=${playerState.ascensionPoints}`,
+    );
     const beforePlayerState = playerState;
 
+    // Current trial rituals advance the initiation; room rituals complete only themselves.
     if (isCurrentTrialRitual && trialDay) {
       await completeTrialDay(trialDay.day);
     } else {
@@ -149,6 +181,7 @@ export default function RitualScreen() {
       return;
     }
 
+    // Feedback is derived from before/after state so engines remain UI-agnostic.
     setCompletionResult(
       createCompletionResult(
         beforePlayerState,
@@ -165,9 +198,30 @@ export default function RitualScreen() {
         <Text style={styles.title}>Ritual Not Found</Text>
         <Text>No ritual exists for this path.</Text>
         <Button
-          title="Return Home"
+          title="Return to Initiation"
           onPress={() => {
-            router.replace("/");
+            console.log(
+              `[NAV] invalid ritual fallback button pressed intendedRoute=/initiation ritualId=${ritualId}`,
+            );
+            router.replace("/initiation");
+          }}
+        />
+      </View>
+    );
+  }
+
+  if (ritual.roomId && !room) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Room Not Found</Text>
+        <Text>This ritual points to a room that is not available.</Text>
+        <Button
+          title="Return to Library"
+          onPress={() => {
+            console.log(
+              `[NAV] invalid ritual room fallback button pressed intendedRoute=/library ritualId=${ritual.id} roomId=${ritual.roomId}`,
+            );
+            router.replace(LIBRARY_ROUTE);
           }}
         />
       </View>
@@ -262,19 +316,18 @@ export default function RitualScreen() {
           </Text>
 
           <Button
-            title="Return to Initiation"
+            title={primaryReturnLabel}
             onPress={() => {
-              router.replace("/initiation");
+              console.log(
+                trialDay
+                  ? `[NAV] return to initiation from ritual completion intendedRoute=/initiation ritualId=${ritual.id} currentDay=${playerState?.currentDay ?? "unknown"} AP=${playerState?.ascensionPoints ?? "unknown"}`
+                  : room
+                    ? `[NAV] return to room from ritual completion intendedRoute=/library/${room.id} ritualId=${ritual.id} roomId=${room.id}`
+                    : `[NAV] return home from ritual completion intendedRoute=/ ritualId=${ritual.id}`,
+              );
+              router.replace(primaryReturnPath);
             }}
           />
-          {room ? (
-            <Button
-              title="Return to Room"
-              onPress={() => {
-                router.replace(`/library/${room.id}` as Href);
-              }}
-            />
-          ) : null}
         </View>
       ) : (
         <Button
@@ -284,17 +337,21 @@ export default function RitualScreen() {
         />
       )}
 
-      <Button
-        title={room ? "Return to Room" : "Return Home"}
-        onPress={() => {
-          if (room) {
-            router.replace(`/library/${room.id}` as Href);
-            return;
-          }
-
-          router.replace("/");
-        }}
-      />
+      {!completionResult ? (
+        <Button
+          title={primaryReturnLabel}
+          onPress={() => {
+            console.log(
+              trialDay
+                ? `[NAV] return to initiation from ritual intendedRoute=/initiation ritualId=${ritual.id} currentDay=${playerState?.currentDay ?? "unknown"} AP=${playerState?.ascensionPoints ?? "unknown"}`
+                : room
+                  ? `[NAV] return to room from ritual intendedRoute=/library/${room.id} ritualId=${ritual.id} roomId=${room.id}`
+                  : `[NAV] return home from ritual intendedRoute=/ ritualId=${ritual.id}`,
+            );
+            router.replace(primaryReturnPath);
+          }}
+        />
+      ) : null}
     </ScrollView>
   );
 }
