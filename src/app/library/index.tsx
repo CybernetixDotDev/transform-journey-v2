@@ -82,8 +82,21 @@ export default function LibraryScreen() {
             : getLockReasons(playerState, room.unlockRequirements);
 
           return (
-            <View key={room.id} style={styles.roomCard}>
-              <Text style={styles.roomStatus}>
+            <View
+              key={room.id}
+              style={[
+                styles.roomCard,
+                isUnlocked ? styles.availableCard : styles.lockedCard,
+                isCompleted ? styles.completedCard : null,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.roomStatus,
+                  isUnlocked ? styles.availableStatus : styles.lockedStatus,
+                  isCompleted ? styles.completedStatus : null,
+                ]}
+              >
                 {isCompleted ? "Completed" : isUnlocked ? "Unlocked" : "Locked"}
               </Text>
               <Text style={styles.roomTitle}>{room.name}</Text>
@@ -121,11 +134,12 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 16,
+    gap: 18,
     padding: 24,
   },
   eyebrow: {
     fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
   },
   title: {
@@ -133,25 +147,48 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   summary: {
-    borderColor: "#bbb",
+    backgroundColor: "#f8f8f8",
+    borderColor: "#aaa",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 6,
-    padding: 12,
+    gap: 8,
+    padding: 14,
   },
   rooms: {
-    gap: 12,
+    gap: 14,
   },
   roomCard: {
     borderColor: "#999",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 14,
+  },
+  availableCard: {
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+  },
+  completedCard: {
+    backgroundColor: "#f7f7f7",
+    borderColor: "#777",
+  },
+  lockedCard: {
+    backgroundColor: "#fafafa",
+    borderColor: "#ccc",
   },
   roomStatus: {
+    fontWeight: "700",
     fontSize: 12,
     textTransform: "uppercase",
+  },
+  availableStatus: {
+    color: "#2e6f40",
+  },
+  completedStatus: {
+    color: "#555",
+  },
+  lockedStatus: {
+    color: "#777",
   },
   roomTitle: {
     fontSize: 18,

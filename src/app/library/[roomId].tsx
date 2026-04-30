@@ -99,7 +99,7 @@ export default function RoomDetailScreen() {
       <Text style={styles.body}>{room.description}</Text>
 
       {!isUnlocked ? (
-        <View style={styles.section}>
+        <View style={[styles.section, styles.lockedPanel]}>
           <Text style={styles.sectionTitle}>Locked</Text>
           {lockReasons.map((reason) => (
             <Text key={reason}>Lock: {reason}</Text>
@@ -125,10 +125,25 @@ export default function RoomDetailScreen() {
                 );
 
                 return (
-                  <View key={ritual.id} style={styles.actionCard}>
+                  <View
+                    key={ritual.id}
+                    style={[
+                      styles.actionCard,
+                      isCompleted ? styles.completedCard : styles.availableCard,
+                    ]}
+                  >
                     <Text style={styles.actionTitle}>{ritual.title}</Text>
                     <Text>{ritual.description}</Text>
-                    <Text>{isCompleted ? "Completed" : "Available"}</Text>
+                    <Text
+                      style={[
+                        styles.actionStatus,
+                        isCompleted
+                          ? styles.completedStatus
+                          : styles.availableStatus,
+                      ]}
+                    >
+                      {isCompleted ? "Completed" : "Available"}
+                    </Text>
                     {!isCompleted ? (
                       <Button
                         title="Begin Ritual"
@@ -155,10 +170,29 @@ export default function RoomDetailScreen() {
                 const bossStatus = getBossStatus(playerState, boss.id);
 
                 return (
-                  <View key={boss.id} style={styles.actionCard}>
+                  <View
+                    key={boss.id}
+                    style={[
+                      styles.actionCard,
+                      bossStatus.canConfront ? styles.availableCard : null,
+                      bossStatus.isDefeated ? styles.completedCard : null,
+                      !bossStatus.canConfront && !bossStatus.isDefeated
+                        ? styles.lockedCard
+                        : null,
+                    ]}
+                  >
                     <Text style={styles.actionTitle}>{boss.name}</Text>
                     <Text>{boss.description}</Text>
-                    <Text>
+                    <Text
+                      style={[
+                        styles.actionStatus,
+                        bossStatus.canConfront ? styles.availableStatus : null,
+                        bossStatus.isDefeated ? styles.completedStatus : null,
+                        !bossStatus.canConfront && !bossStatus.isDefeated
+                          ? styles.lockedStatus
+                          : null,
+                      ]}
+                    >
                       {bossStatus.isDefeated
                         ? "Defeated"
                         : bossStatus.canConfront
@@ -205,11 +239,12 @@ export default function RoomDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 16,
+    gap: 18,
     padding: 24,
   },
   eyebrow: {
     fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
   },
   title: {
@@ -220,18 +255,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   section: {
-    gap: 10,
+    gap: 12,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
   },
+  lockedPanel: {
+    backgroundColor: "#fafafa",
+    borderColor: "#ccc",
+    borderRadius: 6,
+    borderWidth: 1,
+    padding: 14,
+  },
   actionCard: {
     borderColor: "#999",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 14,
+  },
+  availableCard: {
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+  },
+  completedCard: {
+    backgroundColor: "#f7f7f7",
+    borderColor: "#777",
+  },
+  lockedCard: {
+    backgroundColor: "#fafafa",
+    borderColor: "#ccc",
+  },
+  actionStatus: {
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  availableStatus: {
+    color: "#2e6f40",
+  },
+  completedStatus: {
+    color: "#555",
+  },
+  lockedStatus: {
+    color: "#777",
   },
   actionTitle: {
     fontSize: 16,

@@ -121,8 +121,25 @@ export default function InitiationScreen() {
               : "Locked";
 
           return (
-            <View key={trialDay.day} style={styles.dayCard}>
-              <Text style={styles.dayStatus}>{statusLabel}</Text>
+            <View
+              key={trialDay.day}
+              style={[
+                styles.dayCard,
+                isCurrent ? styles.availableCard : null,
+                isCompleted ? styles.completedCard : null,
+                isLocked ? styles.lockedCard : null,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.dayStatus,
+                  isCurrent ? styles.availableStatus : null,
+                  isCompleted ? styles.completedStatus : null,
+                  isLocked ? styles.lockedStatus : null,
+                ]}
+              >
+                {statusLabel}
+              </Text>
               <Text style={styles.dayTitle}>
                 Day {trialDay.day}: {trialDay.title}
               </Text>
@@ -185,51 +202,77 @@ export default function InitiationScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 16,
+    gap: 18,
     padding: 24,
   },
   eyebrow: {
     fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: "700",
   },
   body: {
     fontSize: 16,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
   },
   summary: {
-    borderColor: "#bbb",
+    backgroundColor: "#f8f8f8",
+    borderColor: "#aaa",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 6,
-    padding: 12,
+    gap: 8,
+    padding: 14,
   },
   primaryAction: {
-    borderColor: "#555",
+    backgroundColor: "#f3f6ff",
+    borderColor: "#3f5f91",
     borderRadius: 6,
     borderWidth: 2,
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 16,
   },
   days: {
-    gap: 12,
+    gap: 14,
   },
   dayCard: {
     borderColor: "#999",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 14,
+  },
+  availableCard: {
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+    borderWidth: 2,
+  },
+  completedCard: {
+    backgroundColor: "#f7f7f7",
+    borderColor: "#777",
+  },
+  lockedCard: {
+    backgroundColor: "#fafafa",
+    borderColor: "#ccc",
   },
   dayStatus: {
+    fontWeight: "700",
     fontSize: 12,
     textTransform: "uppercase",
+  },
+  availableStatus: {
+    color: "#2e6f40",
+  },
+  completedStatus: {
+    color: "#555",
+  },
+  lockedStatus: {
+    color: "#777",
   },
   dayTitle: {
     fontSize: 18,

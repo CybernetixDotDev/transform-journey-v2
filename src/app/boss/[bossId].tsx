@@ -249,9 +249,28 @@ export default function BossEncounterScreen() {
       <Text>Room: {room?.name ?? boss.roomId ?? "Unknown"}</Text>
       {trialDay ? <Text>Initiation Day: {trialDay.day}</Text> : null}
 
-      <View style={styles.section}>
+      <View
+        style={[
+          styles.section,
+          styles.readinessPanel,
+          bossStatus.canConfront ? styles.availablePanel : null,
+          bossStatus.isDefeated ? styles.completedPanel : null,
+          !bossStatus.canConfront && !bossStatus.isDefeated
+            ? styles.lockedPanel
+            : null,
+        ]}
+      >
         <Text style={styles.sectionTitle}>Readiness</Text>
-        <Text>
+        <Text
+          style={[
+            styles.statusText,
+            bossStatus.canConfront ? styles.availableStatus : null,
+            bossStatus.isDefeated ? styles.completedStatus : null,
+            !bossStatus.canConfront && !bossStatus.isDefeated
+              ? styles.lockedStatus
+              : null,
+          ]}
+        >
           {bossStatus.isDefeated
             ? "Defeated"
             : bossStatus.canConfront
@@ -312,10 +331,12 @@ export default function BossEncounterScreen() {
       ) : null}
 
       {!encounterResult && bossStatus.canConfront ? (
-        <Button
-          title="Face the Boss"
-          onPress={() => void handleAttemptEncounter()}
-        />
+        <View style={styles.primaryAction}>
+          <Button
+            title="Face the Boss"
+            onPress={() => void handleAttemptEncounter()}
+          />
+        </View>
       ) : null}
 
       {!encounterResult && bossStatus.isDefeated ? (
@@ -326,7 +347,9 @@ export default function BossEncounterScreen() {
       trialDay &&
       !playerState.trialCompleted &&
       trialDay.day !== playerState.currentDay ? (
-        <Text>Continue the current initiation day before facing this boss.</Text>
+        <Text style={styles.lockedStatus}>
+          Continue the current initiation day before facing this boss.
+        </Text>
       ) : null}
 
       <Button
@@ -349,11 +372,12 @@ export default function BossEncounterScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 16,
+    gap: 18,
     padding: 24,
   },
   eyebrow: {
     fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
   },
   title: {
@@ -364,17 +388,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   section: {
-    gap: 8,
+    gap: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
   },
   result: {
-    borderColor: "#777",
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+    borderRadius: 6,
+    borderWidth: 2,
+    gap: 14,
+    padding: 16,
+  },
+  readinessPanel: {
     borderRadius: 6,
     borderWidth: 1,
-    gap: 12,
-    padding: 12,
+    padding: 14,
+  },
+  primaryAction: {
+    backgroundColor: "#f3f6ff",
+    borderColor: "#3f5f91",
+    borderRadius: 6,
+    borderWidth: 2,
+    padding: 10,
+  },
+  availablePanel: {
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+  },
+  completedPanel: {
+    backgroundColor: "#f7f7f7",
+    borderColor: "#777",
+  },
+  lockedPanel: {
+    backgroundColor: "#fafafa",
+    borderColor: "#ccc",
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  availableStatus: {
+    color: "#2e6f40",
+  },
+  completedStatus: {
+    color: "#555",
+  },
+  lockedStatus: {
+    color: "#777",
   },
 });

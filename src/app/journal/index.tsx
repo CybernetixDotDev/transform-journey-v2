@@ -119,11 +119,12 @@ export default function JournalScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 16,
+    gap: 18,
     padding: 24,
   },
   eyebrow: {
     fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
   },
   title: {
@@ -131,13 +132,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   section: {
-    gap: 10,
+    gap: 12,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
   },
   input: {
+    backgroundColor: "#fff",
     borderColor: "#999",
     borderRadius: 6,
     borderWidth: 1,
@@ -146,11 +148,12 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   card: {
+    backgroundColor: "#f8f8f8",
     borderColor: "#999",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 14,
   },
   cardTitle: {
     fontSize: 16,

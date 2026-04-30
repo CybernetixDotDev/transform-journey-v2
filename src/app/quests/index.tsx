@@ -88,8 +88,28 @@ function QuestCard({
   readonly status: string;
 }) {
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardStatus}>{status}</Text>
+    <View
+      style={[
+        styles.card,
+        status === "Available" || status === "Active"
+          ? styles.availableCard
+          : null,
+        status === "Completed" ? styles.completedCard : null,
+        status === "Locked" ? styles.lockedCard : null,
+      ]}
+    >
+      <Text
+        style={[
+          styles.cardStatus,
+          status === "Available" || status === "Active"
+            ? styles.availableStatus
+            : null,
+          status === "Completed" ? styles.completedStatus : null,
+          status === "Locked" ? styles.lockedStatus : null,
+        ]}
+      >
+        {status}
+      </Text>
       <Text style={styles.cardTitle}>{quest.title}</Text>
       <Text>{quest.description}</Text>
       <Text>Type: {quest.type}</Text>
@@ -320,11 +340,12 @@ export default function QuestsScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 16,
+    gap: 18,
     padding: 24,
   },
   eyebrow: {
     fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
   },
   title: {
@@ -332,21 +353,23 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   summary: {
-    borderColor: "#bbb",
-    borderRadius: 6,
-    borderWidth: 1,
-    gap: 6,
-    padding: 12,
-  },
-  result: {
-    borderColor: "#777",
+    backgroundColor: "#f8f8f8",
+    borderColor: "#aaa",
     borderRadius: 6,
     borderWidth: 1,
     gap: 8,
-    padding: 12,
+    padding: 14,
+  },
+  result: {
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+    borderRadius: 6,
+    borderWidth: 2,
+    gap: 10,
+    padding: 16,
   },
   section: {
-    gap: 10,
+    gap: 12,
   },
   sectionTitle: {
     fontSize: 18,
@@ -356,12 +379,34 @@ const styles = StyleSheet.create({
     borderColor: "#999",
     borderRadius: 6,
     borderWidth: 1,
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 14,
+  },
+  availableCard: {
+    backgroundColor: "#f6fbf7",
+    borderColor: "#4f8f64",
+  },
+  completedCard: {
+    backgroundColor: "#f7f7f7",
+    borderColor: "#777",
+  },
+  lockedCard: {
+    backgroundColor: "#fafafa",
+    borderColor: "#ccc",
   },
   cardStatus: {
+    fontWeight: "700",
     fontSize: 12,
     textTransform: "uppercase",
+  },
+  availableStatus: {
+    color: "#2e6f40",
+  },
+  completedStatus: {
+    color: "#555",
+  },
+  lockedStatus: {
+    color: "#777",
   },
   cardTitle: {
     fontSize: 16,

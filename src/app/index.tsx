@@ -152,34 +152,35 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    gap: 12,
+    gap: 18,
     justifyContent: "center",
     padding: 24,
   },
   title: {
-    fontSize: 22,
+    fontSize: 30,
     fontWeight: "700",
   },
   subtitle: {
     fontSize: 16,
   },
   section: {
-    gap: 8,
+    gap: 12,
     marginTop: 12,
   },
   recommendation: {
-    borderColor: "#777",
+    backgroundColor: "#f3f6ff",
+    borderColor: "#3f5f91",
     borderRadius: 6,
-    borderWidth: 1,
-    gap: 6,
-    padding: 12,
+    borderWidth: 2,
+    gap: 8,
+    padding: 14,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
   },
   buttonGroup: {
     gap: 8,
-    marginTop: 16,
+    marginTop: 18,
   },
 });
