@@ -9,6 +9,7 @@ The goal is to ensure:
 - Consistent architecture
 - Safe incremental changes
 - No uncontrolled generation of UI or logic
+- Alignment between engine, content, and experience design
 
 ---
 
@@ -19,6 +20,7 @@ Before making any changes, ALWAYS read:
 - instructions/PROJECT_CONTEXT.md
 - instructions/V1_SCOPE.md
 - instructions/ARCHITECTURE.md
+- docs/DEPTH_DESIGN.md
 
 Do not proceed if these are not understood.
 
@@ -221,9 +223,11 @@ This project succeeds if:
 
 Everything else comes later.
 
-## Content & Design Constraints
+---
 
-All new features and content must follow DEPTH_DESIGN.md.
+# 🎭 CONTENT & DESIGN CONSTRAINTS
+
+All new features and content must follow `DEPTH_DESIGN.md`.
 
 Rules:
 
@@ -236,5 +240,87 @@ Rules:
 
 When unsure:
 
-- prefer simplicity over expansion
-- prefer meaning over features
+- Prefer simplicity over expansion
+- Prefer meaning over features
+
+---
+
+## 🧾 CONTENT IMPLEMENTATION RULES
+
+When implementing or updating content:
+
+- All narrative must come from `DEPTH_DESIGN.md`
+- Map narrative → content files:
+  - `rituals.ts` → scripts + prompts
+  - `bosses.ts` → descriptions + confrontation prompts
+  - `rooms.ts` → symbolic meaning + structure
+  - `archetypes.ts` → identity + stats + tone
+  - `quests.ts` → real-world micro-actions
+
+Do not:
+
+- Invent new IDs unless necessary
+- Break existing routes or references
+- Place narrative directly in UI screens
+
+Always:
+
+- Keep content deterministic
+- Keep content concise and in-app appropriate
+- Ensure content matches psychological purpose
+
+---
+
+## 🧭 NAVIGATION & FLOW RULES
+
+Navigation must follow established gameplay loops:
+
+- Trial rituals → `/initiation`
+- Trial boss → `/initiation`
+- Room rituals → `/library/[roomId]`
+- Boss encounters → `/library/[roomId]`
+
+After any action:
+
+- Always provide a clear **Next Recommended Action**
+- Maintain a single primary CTA
+
+Do not:
+
+- Introduce new navigation patterns
+- Break existing loops
+- Create ambiguous progression paths
+
+Flow consistency is critical.
+
+---
+
+## ⚖️ CONTENT VS ENGINE BOUNDARY
+
+- Engines define WHAT happens (logic, progression, rewards)
+- Content defines WHY it matters (meaning, narrative, prompts)
+
+Rules:
+
+- Do not move logic into content
+- Do not move narrative into engines
+- Do not make engines depend on narrative text
+- Do not make content depend on runtime state
+
+Content must remain:
+
+- Static
+- Declarative
+- Replaceable without breaking systems
+
+This ensures safe future AI integration.
+
+---
+
+## 🧠 FINAL SYSTEM PRINCIPLE
+
+> The engine drives progression.  
+> The content gives it meaning.  
+> The UI guides the player.
+
+All three must remain cleanly separated.
